@@ -1,33 +1,50 @@
-from mycroft import MycroftSkill, intent_file_handler
-import subprocess
+# Copyright 2017 Mycroft AI, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from os.path import join
+from mycroft.skills.core import FallbackSkill
+from mycroft.util.parse import normalize
 
 
-class ControlFurby(MycroftSkill):
+class UnknownSkill(FallbackSkill):
     def __init__(self):
-        MycroftSkill.__init__(self)
+        super(UnknownSkill, self).__init__()
 
-    @intent_file_handler('furby.tell.intent')
-    def handle_furby_tell(self, message):
-        self.speak_dialog('furby.tell')
+    def initialize(self):
+        self.register_fallback(self.handle_fallback, 100)
 
-    @intent_file_handler('furby.dance.intent')
-    def handle_furby_dance(self, message):
-        self.speak_dialog('furby.dance')
+    def read_voc_lines(self, name):
+        with open(self.find_resource(name + '.voc', 'vocab')) as f:
+            return filter(bool, map(str.strip, f.read().split('\n')))
 
-    @intent_file_handler('furby.sing.intent')
-    def handle_furby_sing(self, message):
-        self.speak_dialog('furby.sing')
-        subprocess.call(["perl", "/home/pi/Hacksby/bin/furby-send.pl", "820"])
-        subprocess.call(["perl", "/home/pi/Hacksby/bin/furby-send.pl", "868"])
+    def handle_fallback(self, message):
+        utterance = message.data['utterance']
 
-    @intent_file_handler('more.cowbell.intent')
-    def handle_more_cowbell(self, message):
-        self.speak_dialog('more.cowbell')
-        subprocess.call(["aplay", "-q", "/home/pi/mycroft-core/skills/control-furby.cdoebler/music/dftr.wav"])
+        try:
+            self.report_metric('failed-intent', {'utterance': utterance})
+        except:
+            self.log.exception('Error reporting metric')
 
-    def stop(self):
-        pass
+        for i in ['question', 'who.is', 'why.is']:
+            for l in self.read_voc_lines(i):
+                if utterance.startswith(l):
+                    self.log.info('Fallback type: ' + i)
+                    self.speak_dialog(i, data={'remaining': l.replace(i, '')})
+                    return True
+        self.speak_dialog('unknown')
+        return True
 
 
 def create_skill():
-    return ControlFurby()
+    return UnknownSkill()
