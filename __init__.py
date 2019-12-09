@@ -28,15 +28,6 @@ class UnknownSkill(FallbackSkill):
         with open(self.find_resource(name + '.voc', 'vocab')) as f:
             return filter(bool, map(str.strip, f.read().split('\n')))
 
-    @intent_file_handler('winston.goodmorning.intent')
-    def handle_goodmorning(self, message):
-        self.speak_dialog('winston.goodmorning')
-
-    @intent_file_handler('winston.about.intent')
-    def handle_goodmorning(self, message):
-        self.speak_dialog('winston.about')
-
-
     def handle_fallback(self, message):
         utterance = message.data['utterance']
 
