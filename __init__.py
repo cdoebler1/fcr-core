@@ -2,17 +2,28 @@ from mycroft import MycroftSkill, intent_file_handler
 import subprocess
 
 
-class SmallTalk(MycroftSkill):
+class Winston(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
 
     @intent_file_handler('winston.about.intent')
-    def handle_winston_about(self, message):
+    def winston_about(self, message):
         self.speak_dialog('winston.about')
+
+    @intent_file_handler('winston.temp.intent')
+    def winston_temp(self, message):
+        self.speak_dialog('winston.temp')
+        temp = subprocess.run('vcgencmd measure_temp', capture_output=True)
+        self.speak("My current core temperature is {} degrees celsius"
+                   .format(temp))
+
+    @intent_file_handler('winston.sexy.intent')
+    def winston_sexy(self, message):
+        self.speak_dialog('winston.sexy')
 
     def stop(self):
         pass
 
 
 def create_skill():
-    return SmallTalk()
+    return Winston()
