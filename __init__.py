@@ -18,6 +18,13 @@ class Winston(MycroftSkill):
         self.speak("My current core temperature is {} degrees celsius."
                    .format(temp))
 
+    @intent_file_handler('winston.uptime.intent')
+    def winston_uptime(self, message):
+        self.speak_dialog('winston.uptime')
+        uptime = subprocess.Popen(['uptime', '-p'], stdout=subprocess.PIPE)
+        uptime = uptime.communicate()[0]  # .decode('ascii')[5:-3]
+        self.speak("I have been {}".format(uptime))
+
     @intent_file_handler('winston.sexy.intent')
     def winston_sexy(self, message):
         self.speak_dialog('winston.sexy')
