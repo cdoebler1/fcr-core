@@ -22,7 +22,7 @@ class Winston(MycroftSkill):
     def winston_uptime(self, message):
         self.speak_dialog('winston.uptime')
         uptime = subprocess.Popen(['uptime', '-p'], stdout=subprocess.PIPE)
-        uptime = uptime.communicate()[0]  # .decode('ascii')[5:-3]
+        uptime = uptime.communicate()[0].decode('ascii')[3:-3]
         self.speak("I have been {}".format(uptime))
 
     @intent_file_handler('winston.sexy.intent')
