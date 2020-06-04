@@ -13,7 +13,8 @@ class Winston(MycroftSkill):
     @intent_file_handler('winston.temp.intent')
     def winston_temp(self, message):
         self.speak_dialog('winston.temp')
-        temp = subprocess.Popen(['/opt/vc/bin/vcgencmd', 'measure_temp'], stdout=subprocess.PIPE)
+        temp = subprocess.Popen(['/opt/vc/bin/vcgencmd', 'measure_temp'],
+                                stdout=subprocess.PIPE)
         temp = temp.communicate()[0].decode('ascii')[5:-3]
         self.speak("My current core temperature is {} degrees celsius."
                    .format(temp))
