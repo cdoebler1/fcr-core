@@ -1,4 +1,4 @@
-name: Feral Cat Robotic Core Module
+name: Feral Cat Robotics Core Module
 skillMetadata:
   sections:
     - name: Options << Name of section
