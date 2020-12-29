@@ -9,10 +9,6 @@ class Winston(MycroftSkill):
     def winston_about(self, message):
         self.speak_dialog('winston.about')
 
-    @intent_file_handler('winston.sexy.intent')
-    def winston_sexy(self, message):
-        self.speak_dialog('winston.sexy')
-
     def stop(self):
         pass
 
